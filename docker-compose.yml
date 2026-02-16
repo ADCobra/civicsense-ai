@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+  # Ollama - Free Local LLM Server
+  ollama:
+    image: ollama/ollama:latest
+    container_name: civicsense_ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - civicsense_network
+    restart: unless-stopped
+
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: civicsense_db
+    environment:
+      POSTGRES_DB: civicsense
+      POSTGRES_USER: civicsense
+      POSTGRES_PASSWORD: civicsense_dev_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U civicsense"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - civicsense_network
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: civicsense_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - civicsense_network
+
+networks:
+  civicsense_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:
+  ollama_data:
