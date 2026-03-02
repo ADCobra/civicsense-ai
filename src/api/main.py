@@ -1,4 +1,9 @@
-<<<<<<< HEAD
+# File: src/api/main.py
+"""
+CivicSense AI - FastAPI Backend
+Complete REST API for government schemes
+"""
+
 from pathlib import Path
 from dotenv import load_dotenv
 import os
@@ -7,16 +12,7 @@ project_root = Path(__file__).resolve().parent.parent.parent
 env_path = project_root / ".env"
 load_dotenv(dotenv_path=env_path)
 
-from fastapi import FastAPI, Query, HTTPException
-=======
-# File: src/api/main.py
-"""
-CivicSense AI - FastAPI Backend
-Complete REST API for government schemes
-"""
-
 from fastapi import FastAPI, Query, HTTPException, Depends
->>>>>>> upstream/main
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Any
